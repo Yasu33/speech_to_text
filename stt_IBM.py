@@ -1,20 +1,27 @@
 from ibm_watson import SpeechToTextV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
-authenticator = IAMAuthenticator('{apikey}')
+apikey = input('apikey: ')
+
+authenticator = IAMAuthenticator(apikey)
 speech_to_text = SpeechToTextV1(
     authenticator=authenticator
 )
-speech_to_text.set_service_url('{url}')
+
+url = input('URL: ')
+speech_to_text.set_service_url(url)
 
 # define
-audio_file = open("{file}", "rb")
-cont_type = "audio/flac"
-lang = "en-US_BroadbandModel"
+cont_type = "audio/mp3"
+lang = "ja-JP_BroadbandModel"
 
 # watson connection
-result_json = speech_to_text.recognize(audio=audio_file, content_type=cont_type, model=lang)
+input_file = input('audio file path: ')
+with open(input_file, 'rb') as audio_file:
+    result_json = speech_to_text.recognize(audio=audio_file, content_type=cont_type, model=lang)
 
 # print
-for i in range(len(result_json.result["results"])):
-    print(result_json.result["results"][i]["alternatives"][0]["transcript"])
+output_file = input('output file path: ')
+with open(output_file, 'w') as f:
+    for i in range(len(result_json.result["results"])):
+        f.write(result_json.result["results"][i]["alternatives"][0]["transcript"].replace(' ', '') + '。')
